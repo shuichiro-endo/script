@@ -2,7 +2,7 @@
 
 script
 
-## build
+## Build
 1. download files
 ```
 git clone https://github.com/shuichiro-endo/script.git
@@ -56,6 +56,25 @@ $ hexdump -C .2433.txt
 00000081
 $ 
 ```
+
+## Notes
+### How to run my script program when starting a terminal
+- ~/.bashrc
+  - sample1
+  ```
+  trap "rm -rf /tmp/.foobar; exit;" SIGHUP
+  if [ ! -f /tmp/.foobar ]; then
+      touch /tmp/.foobar
+      ~/script/script    # my script program
+  fi
+  ```
+  - sample2
+  ```
+  result=`pstree -p -t -T | grep $$ | grep "script"`
+  if [ -z "$result" ]; then
+      ~/script/script    # my script program
+  fi
+  ```
 
 ## License
 This project is licensed under the MIT License.
