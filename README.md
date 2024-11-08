@@ -76,6 +76,17 @@ $
   fi
   ```
 
+### How to change logfile directory
+1. modify script.c file
+```
+static char *logfile_directory = "/tmp";
+```
+2. compile
+```
+cd script
+gcc script.c -o script
+```
+
 ## License
 This project is licensed under the MIT License.
 

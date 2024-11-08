@@ -28,6 +28,8 @@
 
 struct termios termios;
 
+static char *logfile_directory = "/tmp";
+
 
 static void fini(void)
 {
@@ -210,7 +212,7 @@ int main(int argc, char* argv[])
         exit(0);
     }else{  // parent
         pid = getpid();
-        sprintf(logfile_name, ".%d.txt", (int)pid);
+        sprintf(logfile_name, "%s/.%d.txt", logfile_directory, (int)pid);
 
         logfile_fd = open(logfile_name, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
         if(logfile_fd == -1){
