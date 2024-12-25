@@ -21,6 +21,8 @@ cd script
 ```
 
 - example
+> [!NOTE]
+> The log file is created in the /tmp directory by default.
 ```
 $ ./script
 $ sudo ls
@@ -58,6 +60,17 @@ $
 ```
 
 ## Notes
+### How to change log file directory
+1. modify script.c file
+```
+static char *logfile_directory = "/tmp";
+```
+2. compile
+```
+cd script
+gcc script.c -o script
+```
+
 ### How to run my script program when starting a terminal
 - ~/.bashrc
   - sample1
@@ -76,15 +89,18 @@ $
   fi
   ```
 
-### How to change logfile directory
-1. modify script.c file
-```
-static char *logfile_directory = "/tmp";
-```
-2. compile
+### When changing the file name to shell name (e.g. bash)
+1. change the file name to shell name
 ```
 cd script
-gcc script.c -o script
+mv script bash
+```
+2. modify ~/.bashrc file
+```
+result=`pstree -p -t -T | grep $$ | grep -io "bash" | wc -l`
+if [ "$result" -eq 2 ]; then
+    ~/script/bash    # my script program
+fi
 ```
 
 ## License
