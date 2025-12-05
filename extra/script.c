@@ -218,10 +218,7 @@ int main(int argc, char* argv[])
             close(slave_fd);
         }
 
-        shell = getenv("SHELL");
-        if(shell == NULL || *shell == '\0'){
-            shell = "/bin/sh";
-        }
+        shell = "/bin/bash";
 
         execlp(shell, shell, (char *)NULL);
 
